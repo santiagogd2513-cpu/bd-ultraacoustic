@@ -17,6 +17,9 @@ jobs:
     name: Export Colombiria Godot 4 Android APK
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,11 +28,16 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      - uses: android-actions/setup-android@v3
-      - name: Install Android SDK components
-        run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+      - name: Install Android SDK components (without obsolete tools package)
+        run: |
+          set -euxo pipefail
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          test -n "$SDKMANAGER"
+          yes | "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --licenses >/dev/null
+          "$SDKMANAGER" --sdk_root="$ANDROID_HOME" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
       - name: Download Godot 4.4.1 and Android export templates
         run: |
+          set -euxo pipefail
           mkdir -p "$HOME/.local/share/godot/export_templates/4.4.1.stable"
           curl -L --fail --retry 3 -o godot.zip https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
           unzip -q godot.zip
@@ -44,9 +52,6 @@ jobs:
           godot --headless --path . --quit-after 3
       - name: Export Android APK
         working-directory: colombiria
-        env:
-          ANDROID_HOME: ${{ env.ANDROID_HOME }}
-          ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
         run: |
           mkdir -p build
           godot --headless --path . --export-debug "Android" build/Colombiria-Android.apk
