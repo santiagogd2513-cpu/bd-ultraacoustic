@@ -57,8 +57,7 @@ final class WorldRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(0.48f,0.64f,0.72f,1f);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glDepthFunc(GLES20.GL_LEQUAL);
-        GLES20.glEnable(GLES20.GL_CULL_FACE);
-        GLES20.glCullFace(GLES20.GL_BACK);
+        GLES20.glDisable(GLES20.GL_CULL_FACE);
         GLES20.glDisable(GLES20.GL_BLEND);
         int vs=compile(GLES20.GL_VERTEX_SHADER,VS), fs=compile(GLES20.GL_FRAGMENT_SHADER,FS);
         program=GLES20.glCreateProgram();
@@ -95,7 +94,7 @@ final class WorldRenderer implements GLSurfaceView.Renderer {
             float ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
             float nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;
             float len=(float)Math.sqrt(nx*nx+ny*ny+nz*nz); if(len<0.0001f)return;
-            nx/=len;ny/=len;nz/=len;
+            nx/=len;ny/=len;nz/=len; if(ny<0f){nx=-nx;ny=-ny;nz=-nz;}
             vertex(a[0],a[1],a[2],nx,ny,nz,color[0],color[1],color[2],1,mat);
             vertex(b[0],b[1],b[2],nx,ny,nz,color[0],color[1],color[2],1,mat);
             vertex(c[0],c[1],c[2],nx,ny,nz,color[0],color[1],color[2],1,mat);
