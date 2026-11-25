@@ -67,13 +67,15 @@ struct Engine {
         if(!count){LOGE("No Vulkan physical device");return false;}
         std::vector<VkPhysicalDevice> devices(count); vkEnumeratePhysicalDevices(instance,&count,devices.data());
         for(auto candidate:devices){
+            VkPhysicalDeviceProperties candidateProps{}; vkGetPhysicalDeviceProperties(candidate,&candidateProps);
+            if(candidateProps.apiVersion < VK_API_VERSION_1_1) continue;
             uint32_t qcount=0; vkGetPhysicalDeviceQueueFamilyProperties(candidate,&qcount,nullptr);
             std::vector<VkQueueFamilyProperties> qs(qcount); vkGetPhysicalDeviceQueueFamilyProperties(candidate,&qcount,qs.data());
             for(uint32_t i=0;i<qcount;i++){VkBool32 present=VK_FALSE;vkGetPhysicalDeviceSurfaceSupportKHR(candidate,i,surface,&present);
                 if((qs[i].queueFlags&VK_QUEUE_GRAPHICS_BIT)&&present){gpu=candidate;queueFamily=i;break;}}
             if(gpu)break;
         }
-        if(!gpu){LOGE("No graphics+present queue");return false;}
+        if(!gpu){LOGE("No Vulkan 1.1+ graphics/present device found");return false;}
         VkPhysicalDeviceProperties props{};vkGetPhysicalDeviceProperties(gpu,&props);
         LOGI("GPU: %s Vulkan %u.%u.%u",props.deviceName,VK_VERSION_MAJOR(props.apiVersion),VK_VERSION_MINOR(props.apiVersion),VK_VERSION_PATCH(props.apiVersion));
         const char* devExt[]={VK_KHR_SWAPCHAIN_EXTENSION_NAME};
