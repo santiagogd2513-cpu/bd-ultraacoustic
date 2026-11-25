@@ -1,32 +1,46 @@
-# COLOMBIRIA: Rutas Salvajes — Beta 2
+# COLOMBIRIA: Rutas Salvajes — Vulkan Graphics Engine / Phase 1
 
-Android graphics-engine laboratory, isolated under `colombiria/` inside the existing repository. The Minecraft acoustic project at the repository root and the default branch are not modified.
+This Android project lives under `colombiria/` on the isolated branch `feature/colombiria-open-world`. It does not replace the Minecraft project at the repository root or modify the default branch.
 
-## Beta 2 graphics target
+## Phase 1 objective
 
-Beta 2 replaces the Beta 1 flat low-poly scene with a substantially expanded procedural OpenGL ES 2.0 renderer:
+Build a production-oriented Android 3D renderer with Vulkan as the primary graphics API. Phase 1 is not complete merely because the app builds: it must produce a convincing visual test scene and pass real-device performance and stability tests.
 
-- Tessellated rolling terrain with generated height variation and vertex shading.
-- Layered mountain valley silhouettes and distance fog.
-- Curving road ribbon with shoulders and center markings.
-- Procedural river surface with animated wave and sparkle modulation in the material shader.
-- Bridge deck, tunnel portal, fixed conifer meshes and faceted rock formations.
-- Directional diffuse lighting, hemisphere fill, material-aware water shading and atmospheric distance blending.
-- More efficient primitive-array mesh construction to reduce Java allocation overhead.
-- Shader compile/link checks so graphics-program errors fail visibly instead of silently rendering a blank frame.
-- Android app version 0.2.0-beta2 and automatic GitHub Actions debug-APK build.
+## Current implementation milestone: Vulkan Alpha 1
 
-## Important scope and limitations
+- Android Java activity hosts a native Android Surface.
+- C++17 renderer uses the Android NDK and Vulkan 1.1 API.
+- Native Vulkan instance, Android surface, physical-device selection, graphics/present queue, logical device and swapchain.
+- Render pass, framebuffers, command buffers, synchronization primitives and graphics pipeline.
+- GLSL 450 vertex/fragment shaders compiled to SPIR-V with `glslc` during CMake build.
+- Initial GPU draw call renders a shader-driven triangle, proving the native Vulkan pipeline path.
+- Vulkan 1.1-capable GPU selection is checked at runtime.
+- CI builds an arm64 Android debug APK with JDK 17, Android NDK, CMake and shader compiler.
 
-This is an ambitious graphics prototype, not yet the final production renderer. It still uses a single bounded procedural scene and one interleaved mesh. It does not yet contain true sector streaming, physically based materials, texture maps, shadow maps, reflection probes, volumetric clouds, full weather simulation, production vehicle assets, full vehicle physics, or a completed sound system. Those require further implementation and device profiling.
+## What is not finished yet
 
-The scene uses fixed world props; trees are not destructible. The renderer is designed for GLES 2.0 compatibility and must be tested on real Android GPUs. Visual quality and frame rate will depend on device capabilities.
+This alpha is an API and rendering-pipeline foundation, not the promised realistic graphics engine. It does not yet include a 3D landscape, PBR material system, texture streaming, shadow maps, physically based sky, volumetric clouds, water reflections, vegetation assets, post-processing, or production asset pipeline. The previous OpenGL ES renderer is no longer the active rendering path.
+
+## Phase 1 completion gates
+
+1. Vulkan device/extension/format capability reporting and robust swapchain recreation.
+2. GPU resource and memory management, descriptor/pipeline cache and upload staging.
+3. Camera, transforms, mesh buffers, depth buffer and indexed geometry.
+4. Terrain mesh generation, normal/tangent generation and multi-resolution LOD.
+5. PBR materials with albedo, normal, roughness/metallic and ambient occlusion textures.
+6. Directional lighting, cascaded shadow maps, image-based/ambient lighting and tone mapping.
+7. Real water material, animated waves, reflections/refraction approximation and shoreline blending.
+8. Detailed vegetation and terrain/rock assets with wind animation and distance culling.
+9. Sky, clouds, atmospheric perspective, fog and exposure adaptation.
+10. GPU timing, dynamic resolution, memory budgets, thermal-aware quality tiers and device profiling.
+11. Visual acceptance scene and sustained real-device test before Phase 1 sign-off.
 
 ## Build
 
-GitHub Actions builds with JDK 17 and Gradle 8.7:
-`gradle --no-daemon :app:assembleDebug`
+GitHub Actions installs Android NDK 27.2.12479018, CMake 3.22.1 and `glslc`, then runs:
 
-Output: `app/build/outputs/apk/debug/app-debug.apk`
+```sh
+gradle --no-daemon :app:assembleDebug
+```
 
-Workflow artifact: `Colombiria-Beta2-Android`.
+Target ABI for this Vulkan alpha: `arm64-v8a`.
