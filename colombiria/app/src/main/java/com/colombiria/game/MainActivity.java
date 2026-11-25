@@ -19,8 +19,21 @@ public final class MainActivity extends Activity implements SurfaceHolder.Callba
     private SurfaceView surfaceView;
     private boolean surfaceReady;
 
+    private void enterImmersiveMode() {
+        final View decor = getWindow().getDecorView();
+        decor.setSystemUiVisibility(
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            | View.SYSTEM_UI_FLAG_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        );
+    }
+
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
+        enterImmersiveMode();
         FrameLayout root = new FrameLayout(this);
         surfaceView = new SurfaceView(this);
         surfaceView.getHolder().addCallback(this);
@@ -51,6 +64,16 @@ public final class MainActivity extends Activity implements SurfaceHolder.Callba
             return true;
         });
         setContentView(root);
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        enterImmersiveMode();
+    }
+
+    @Override public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) enterImmersiveMode();
     }
 
     @Override public void surfaceCreated(SurfaceHolder holder) {
