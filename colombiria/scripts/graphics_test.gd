@@ -167,8 +167,7 @@ func _build_test_vehicle() -> void:
 
 func _build_camera() -> void:
 	var camera := Camera3D.new()
-	camera.position = Vector3(44,37,-58)
-	camera.look_at(Vector3(0,2,12),Vector3.UP)
+	camera.look_at_from_position(Vector3(44,37,-58),Vector3(0,2,12),Vector3.UP)
 	camera.fov = 58.0
 	add_child(camera)
 	camera.current = true
