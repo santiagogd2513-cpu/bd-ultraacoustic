@@ -29,8 +29,10 @@ jobs:
           java-version: "17"
       - name: Install Android NDK, CMake and shader compiler
         run: |
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;27.2.12479018" "cmake;3.22.1"
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
+          test -n "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses >/dev/null
+          "$SDKMANAGER" "ndk;27.2.12479018" "cmake;3.22.1"
           sudo apt-get update
           sudo apt-get install -y glslc
       - name: Set up Gradle 8.7
