@@ -6,8 +6,7 @@ import android.opengl.Matrix;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -85,10 +84,15 @@ final class WorldRenderer implements GLSurfaceView.Renderer {
     }
 
     private static final class MeshBuilder {
-        final List<Float> values=new ArrayList<>();
+        private float[] values=new float[1<<18];
+        private int size;
+        private void put(float value){
+            if(size==values.length) values=Arrays.copyOf(values,values.length*2);
+            values[size++]=value;
+        }
         void vertex(float x,float y,float z,float nx,float ny,float nz,float r,float g,float b,float a,float mat){
-            values.add(x);values.add(y);values.add(z);values.add(nx);values.add(ny);values.add(nz);
-            values.add(r);values.add(g);values.add(b);values.add(a);values.add(mat);
+            put(x);put(y);put(z);put(nx);put(ny);put(nz);
+            put(r);put(g);put(b);put(a);put(mat);
         }
         void triangle(float[] a,float[] b,float[] c,float[] color,float mat){
             float ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
@@ -104,7 +108,7 @@ final class WorldRenderer implements GLSurfaceView.Renderer {
             triangle(new float[]{x1,y,z1},new float[]{x1,y,z2},new float[]{x2,y,z2},c,mat);
             triangle(new float[]{x1,y,z1},new float[]{x2,y,z2},new float[]{x2,y,z1},c,mat);
         }
-        float[] toArray(){float[] a=new float[values.size()];for(int i=0;i<a.length;i++)a[i]=values.get(i);return a;}
+        float[] toArray(){return Arrays.copyOf(values,size);}
     }
 
     private float terrain(float x,float z){
