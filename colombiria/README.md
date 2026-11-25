@@ -1,46 +1,36 @@
-# COLOMBIRIA: Rutas Salvajes — Vulkan Graphics Engine / Phase 1
+# COLOMBIRIA: Rutas Salvajes — Godot 4 / Phase 1
 
-This Android project lives under `colombiria/` on the isolated branch `feature/colombiria-open-world`. It does not replace the Minecraft project at the repository root or modify the default branch.
+The isolated project lives under colombiria/ on feature/colombiria-open-world. The repository root and default branch remain untouched.
 
-## Phase 1 objective
+## Engine migration
 
-Build a production-oriented Android 3D renderer with Vulkan as the primary graphics API. Phase 1 is not complete merely because the app builds: it must produce a convincing visual test scene and pass real-device performance and stability tests.
+The hand-written Vulkan/JNI prototype is retired as the active runtime. Godot 4.4.1 is now the game engine. The Android export uses Godot's Mobile renderer (Vulkan on supported Android devices), arm64-v8a, landscape orientation and the immersive fullscreen export option.
 
-## Current implementation milestone: Vulkan Alpha 1
+## Current Phase 1 foundation
 
-- Android Java activity hosts a native Android Surface.
-- C++17 renderer uses the Android NDK and Vulkan 1.1 API.
-- Native Vulkan instance, Android surface, physical-device selection, graphics/present queue, logical device and swapchain.
-- Render pass, framebuffers, command buffers, synchronization primitives and graphics pipeline.
-- GLSL 450 vertex/fragment shaders compiled to SPIR-V with `glslc` during CMake build.
-- Initial GPU draw call renders a shader-driven triangle, proving the native Vulkan pipeline path.
-- Vulkan 1.1-capable GPU selection is checked at runtime.
-- CI builds an arm64 Android debug APK with JDK 17, Android NDK, CMake and shader compiler.
+- Godot 4 project, main scene and procedural visual acceptance scene.
+- Procedural Andean foothills with generated mesh and normals.
+- Filmic tonemapping, procedural sky, ambient sky lighting and atmospheric fog.
+- Directional sun with four-split directional shadows.
+- Animated shader-based river surface.
+- Forest prototype rendered with MultiMesh instancing.
+- Fictional AndesDrive-inspired vehicle blockout for scale and material checks.
+- Android export preset with immersive mode requested.
+- GitHub Actions installs Godot 4.4.1, Android SDK and export templates, validates the project headlessly, and exports an arm64 APK.
 
-## What is not finished yet
+## Limitations
 
-This alpha is an API and rendering-pipeline foundation, not the promised realistic graphics engine. It does not yet include a 3D landscape, PBR material system, texture streaming, shadow maps, physically based sky, volumetric clouds, water reflections, vegetation assets, post-processing, or production asset pipeline. The previous OpenGL ES renderer is no longer the active rendering path.
+This is the first Godot migration milestone, not a finished high-end graphics engine. The scene uses procedural placeholder geometry/materials; production assets, texture sets, a complete PBR asset pipeline, robust world streaming, advanced water, foliage wind animation, adaptive quality tiers and real-device profiling remain unfinished. The old Vulkan triangle app is not the active game.
 
-## Phase 1 completion gates
+## Phase 1 acceptance gates
 
-1. Vulkan device/extension/format capability reporting and robust swapchain recreation.
-2. GPU resource and memory management, descriptor/pipeline cache and upload staging.
-3. Camera, transforms, mesh buffers, depth buffer and indexed geometry.
-4. Terrain mesh generation, normal/tangent generation and multi-resolution LOD.
-5. PBR materials with albedo, normal, roughness/metallic and ambient occlusion textures.
-6. Directional lighting, cascaded shadow maps, image-based/ambient lighting and tone mapping.
-7. Real water material, animated waves, reflections/refraction approximation and shoreline blending.
-8. Detailed vegetation and terrain/rock assets with wind animation and distance culling.
-9. Sky, clouds, atmospheric perspective, fog and exposure adaptation.
-10. GPU timing, dynamic resolution, memory budgets, thermal-aware quality tiers and device profiling.
-11. Visual acceptance scene and sustained real-device test before Phase 1 sign-off.
-
-## Build
-
-GitHub Actions installs Android NDK 27.2.12479018, CMake 3.22.1 and `glslc`, then runs:
-
-```sh
-gradle --no-daemon :app:assembleDebug
-```
-
-Target ABI for this Vulkan alpha: `arm64-v8a`.
+1. Confirm Android export and immersive fullscreen on real devices.
+2. Verify actual Vulkan renderer/device capability and fallback behavior.
+3. Replace placeholder terrain with multi-resolution terrain chunks and LOD.
+4. Establish PBR texture/material pipeline and asset import settings.
+5. Improve sky, atmospheric perspective, clouds and gradual exposure adaptation.
+6. Implement production vegetation, wind animation, culling and protected colliders.
+7. Improve water shading, waves, transparency/reflection approximation and shoreline.
+8. Add mobile post-processing and lighting quality tiers.
+9. Add camera rigs, GPU/memory profiling, dynamic resolution and thermal-aware scaling.
+10. Produce a representative visual benchmark scene and sustained device tests before Phase 1 sign-off.
