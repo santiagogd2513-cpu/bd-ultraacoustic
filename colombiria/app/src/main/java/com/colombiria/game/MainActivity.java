@@ -23,9 +23,10 @@ public final class MainActivity extends Activity {
         root.addView(surface, new FrameLayout.LayoutParams(-1, -1));
 
         TextView hud = new TextView(this);
-        hud.setText("COLOMBIRIA  •  BETA 1     ATX-01     Toca para acelerar");
+        hud.setText("COLOMBIRIA  •  BETA 2     ATX-01     Mantén para acelerar");
         hud.setTextColor(0xffffffff);
         hud.setTextSize(13);
+        hud.setShadowLayer(3f, 1f, 2f, 0xff10202a);
         hud.setPadding(22, 16, 22, 16);
         hud.setBackgroundColor(0x660b1720);
         root.addView(hud);
